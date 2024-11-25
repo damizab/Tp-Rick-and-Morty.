@@ -12,8 +12,10 @@ def index_page(request):
 # si el opcional de favoritos no está desarrollado, devuelve un listado vacío.
 def home(request):
     images = services.getAllImages()
-    favourite_list = []
-
+    if request.user.is_authenticated:
+        favourite_list = services.getAllFavourites
+    else:
+        favourite_list =[]       
     return render(request, 'home.html', { 'images': images, 'favourite_list': favourite_list })
 
 def search(request):
@@ -33,17 +35,22 @@ def search(request):
 @login_required
 def getAllFavouritesByUser(request):
     favourite_list = []
-    favourite_list =services.getAllImages()
-    
-    return render(request, 'favourites.html', { 'favourite_list': favourite_list })
+    favourite= services.getAllFavourites(request)
+    for favorito in favourite:
+        favourite_list.append(favorito)
+    return render(request, 'favourites.html', {'favourite_list': favourite_list })
 
 @login_required
 def saveFavourite(request):
-    pass
+    favourite_list = services.saveFavourite(request)
+    
+    return render(request, 'favourites.html', {'favourite_list': favourite_list })
 
 @login_required
 def deleteFavourite(request):
-    pass
+    favourite_list = services.deleteFavourite(request)
+    
+    return render(request, 'favourites.html', {'favourite_list': favourite_list })
 
 @login_required
 def exit(request):
