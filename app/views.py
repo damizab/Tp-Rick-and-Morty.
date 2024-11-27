@@ -20,12 +20,9 @@ def home(request):
 
 def search(request):
     search_msg = request.POST.get('query', '')
-    # si el texto ingresado no es vacío, trae las imágenes y favoritos desde services.py,
-    # y luego renderiza el template (similar a home).
     if (search_msg != ''):
         images = services.getAllImages(search_msg)
         favourite_list= []
-
         return render(request, 'home.html', { 'images': images, 'favourite_list': favourite_list})        
     else:
         return redirect('home')
@@ -42,15 +39,17 @@ def getAllFavouritesByUser(request):
 
 @login_required
 def saveFavourite(request):
-    favourite_list = services.saveFavourite(request)
+    services.saveFavourite(request)
+    favourite_list = services.getAllFavourites(request)
+    image= services.getAllImages()
+    return render(request,'home.html', {'images': image,'favourite.html': favourite_list})
     
-    return render(request, 'favourites.html', {'favourite_list': favourite_list })
-
 @login_required
 def deleteFavourite(request):
-    favourite_list = services.deleteFavourite(request)
+    services.deleteFavourite(request)
+    favourite_list = services.getAllFavourites(request)
     
-    return render(request, 'favourites.html', {'favourite_list': favourite_list })
+    return render(request,'favourites.html', {'favourite_list': favourite_list })
 
 @login_required
 def exit(request):
